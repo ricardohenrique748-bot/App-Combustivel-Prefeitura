@@ -1,0 +1,149 @@
+
+import React from 'react';
+import { 
+  Settings as SettingsIcon, 
+  Bell, 
+  Shield, 
+  Database, 
+  Save, 
+  Globe, 
+  Smartphone,
+  Check
+} from 'lucide-react';
+
+const Settings: React.FC = () => {
+  return (
+    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-extrabold text-slate-900">Configurações do Sistema</h1>
+          <p className="text-sm text-slate-500">Ajuste preferências globais e parâmetros de controle.</p>
+        </div>
+        <button className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-primary-600 shadow-lg active:scale-95 transition-all">
+          <Save className="w-4 h-4" />
+          Salvar Alterações
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Navigation Sidebar */}
+        <nav className="lg:col-span-1 space-y-2">
+          {[
+            { id: 'general', label: 'Geral', icon: SettingsIcon, active: true },
+            { id: 'notifications', label: 'Notificações', icon: Bell },
+            { id: 'security', label: 'Segurança', icon: Shield },
+            { id: 'data', label: 'Dados & API', icon: Database },
+          ].map((item) => (
+            <button 
+              key={item.id}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                item.active 
+                  ? 'bg-primary text-white shadow-lg shadow-primary/20' 
+                  : 'text-slate-500 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Content Area */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* General Section */}
+          <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              Parâmetros de Combustível
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Preço Base: Gasolina (R$)</label>
+                <input 
+                  type="number" 
+                  step="0.001" 
+                  defaultValue="5.899"
+                  className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Preço Base: Diesel S10 (R$)</label>
+                <input 
+                  type="number" 
+                  step="0.001" 
+                  defaultValue="6.120"
+                  className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Frequência de Relatório</label>
+                <select className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none font-bold appearance-none">
+                  <option>Semanal (Segunda-feira)</option>
+                  <option>Quinzenal</option>
+                  <option>Mensal</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Fuso Horário</label>
+                <select className="w-full p-3 bg-slate-50 border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none font-bold appearance-none">
+                  <option>Brasília (GMT-3)</option>
+                  <option>Manaus (GMT-4)</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          {/* Alerts Toggle Section */}
+          <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-primary" />
+              Alertas de Monitoramento
+            </h3>
+
+            <div className="space-y-4">
+              {[
+                { title: 'Aviso de Baixa Cota (75%)', desc: 'Notificar gestores quando a secretaria atingir 75% da cota mensal.', active: true },
+                { title: 'Alerta de Baixa Eficiência', desc: 'Identificar veículos operando abaixo da média de 7.5 KM/L.', active: true },
+                { title: 'Lembrete de Manutenção', desc: 'Avisar quando o veículo estiver a 500km da próxima revisão.', active: false },
+                { title: 'Abastecimentos Suspeitos', desc: 'IA analisa padrões de consumo para detectar fraudes em tempo real.', active: true }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="max-w-md">
+                    <p className="text-sm font-bold text-slate-800">{item.title}</p>
+                    <p className="text-xs text-slate-500">{item.desc}</p>
+                  </div>
+                  <button className={`w-12 h-6 rounded-full p-1 transition-colors relative ${item.active ? 'bg-primary' : 'bg-slate-300'}`}>
+                    <div className={`w-4 h-4 bg-white rounded-full transition-transform ${item.active ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Integration Status */}
+          <section className="bg-emerald-600 rounded-2xl p-6 text-white flex items-center justify-between shadow-xl shadow-emerald-100">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Smartphone className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-sm font-bold opacity-80 uppercase tracking-widest text-[10px]">App de Motorista</p>
+                <p className="text-xl font-black">Sincronização Ativa</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-bold">142 dispositivos conectados</span>
+                </div>
+              </div>
+            </div>
+            <button className="bg-white text-emerald-600 px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+              Gerenciar Chaves
+            </button>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Settings;

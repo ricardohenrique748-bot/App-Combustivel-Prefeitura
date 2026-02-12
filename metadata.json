@@ -1,0 +1,7 @@
+{
+  "name": "FleetFuel - Gestão de Frotas e Combustível",
+  "description": "Uma plataforma completa para gestão de abastecimento, controle de cotas por secretaria, monitoramento de eficiência e relatórios detalhados de consumo de frota.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
