@@ -37,8 +37,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, onLogout
           <Fuel className="text-white w-6 h-6" />
         </div>
         <div>
-          <span className="text-xl font-bold tracking-tight text-slate-900 block leading-tight">FleetFuel</span>
-          <span className="text-[10px] font-semibold text-primary uppercase tracking-widest">Management</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900 block leading-tight">Smart Tech</span>
+          <span className="text-[10px] font-semibold text-primary uppercase tracking-widest">Gestão de Frotas</span>
         </div>
       </div>
 
@@ -50,8 +50,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, onLogout
             key={item.id}
             onClick={() => setCurrentPage(item.id)}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentPage === item.id
-                ? 'bg-primary text-white shadow-md shadow-primary/30 font-medium'
-                : 'text-slate-500 hover:bg-slate-50 hover:text-primary font-medium'
+              ? 'bg-primary text-white shadow-md shadow-primary/30 font-medium'
+              : 'text-slate-500 hover:bg-slate-50 hover:text-primary font-medium'
               }`}
           >
             <item.icon className={`w-5 h-5 transition-transform duration-200 ${currentPage === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
@@ -65,8 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, onLogout
             key={item.id}
             onClick={() => setCurrentPage(item.id)}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${currentPage === item.id
-                ? 'bg-primary text-white shadow-md shadow-primary/30 font-medium'
-                : 'text-slate-500 hover:bg-slate-50 hover:text-primary font-medium'
+              ? 'bg-primary text-white shadow-md shadow-primary/30 font-medium'
+              : 'text-slate-500 hover:bg-slate-50 hover:text-primary font-medium'
               }`}
           >
             <item.icon className={`w-5 h-5 transition-transform duration-200 ${currentPage === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
