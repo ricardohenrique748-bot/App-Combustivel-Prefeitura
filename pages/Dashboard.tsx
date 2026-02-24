@@ -1,24 +1,26 @@
 
 import React, { useMemo } from 'react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Cell
 } from 'recharts';
-import { 
-  Droplet, 
-  History, 
-  Truck, 
-  TrendingUp, 
+import {
+  Droplet,
+  History,
+  Truck,
+  TrendingUp,
   MoreVertical,
   Download,
   Bell,
-  Search
+  Search,
+  ShieldCheck,
+  LogIn
 } from 'lucide-react';
 import { CONSUMPTION_TRENDS } from '../constants';
 import { useFleet } from '../FleetContext';
@@ -39,7 +41,7 @@ const Dashboard: React.FC = () => {
       totalConsumed,
       totalRemaining,
       monthlyConsumption,
-      percentAvailable: (totalRemaining / totalContracted) * 100
+      percentAvailable: totalContracted > 0 ? (totalRemaining / totalContracted) * 100 : 0
     };
   }, [secretariats, transactions]);
 
@@ -53,9 +55,9 @@ const Dashboard: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="Buscar dados..." 
+            <input
+              type="text"
+              placeholder="Buscar dados..."
               className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             />
           </div>
@@ -86,7 +88,7 @@ const Dashboard: React.FC = () => {
             <div className="relative w-14 h-14">
               <svg className="w-full h-full transform -rotate-90">
                 <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-slate-100" />
-                <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="150" strokeDashoffset={150 - (150 * (kpis.percentAvailable/100))} className="text-primary transition-all duration-1000" />
+                <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent" strokeDasharray="150" strokeDashoffset={150 - (150 * (kpis.percentAvailable / 100))} className="text-primary transition-all duration-1000" />
               </svg>
             </div>
           </div>
@@ -148,19 +150,25 @@ const Dashboard: React.FC = () => {
               <p className="text-sm text-slate-500">Consumo diário total (L) nos últimos 30 dias</p>
             </div>
           </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={CONSUMPTION_TRENDS}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
-                <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                  {CONSUMPTION_TRENDS.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === 2 ? '#135bec' : '#bfdbfe'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-72 w-full flex items-center justify-center">
+            {CONSUMPTION_TRENDS.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={CONSUMPTION_TRENDS}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
+                  <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                  <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                    {CONSUMPTION_TRENDS.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index === 2 ? '#135bec' : '#bfdbfe'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-center">
+                <p className="text-slate-400 text-sm font-medium">Nenhuma tendência identificada ainda.</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -172,25 +180,31 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           <div className="flex-1 divide-y divide-slate-50 overflow-y-auto scrollbar-hide">
-            {secretariats.filter(s => s.status !== 'HEALTHY').map(s => (
-              <div key={s.id} className="p-4 hover:bg-slate-50 transition-colors cursor-pointer group">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-bold text-slate-900">{s.name}</span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase ${
-                    s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
-                  }`}>{s.status === 'CRITICAL' ? 'Crítico' : 'Aviso'}</span>
-                </div>
-                <div className="flex justify-between items-end">
-                  <div>
-                    <p className="text-xs text-slate-500 mb-2">Restante: <span className="font-bold text-slate-900">{s.remaining.toLocaleString()} L</span></p>
-                    <div className="w-32 h-1 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full ${s.status === 'CRITICAL' ? 'bg-rose-500' : 'bg-amber-500'}`} style={{ width: `${(s.remaining/s.contracted) * 100}%` }}></div>
-                    </div>
+            {secretariats.filter(s => s.status !== 'HEALTHY').length > 0 ? (
+              secretariats.filter(s => s.status !== 'HEALTHY').map(s => (
+                <div key={s.id} className="p-4 hover:bg-slate-50 transition-colors cursor-pointer group">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-bold text-slate-900">{s.name}</span>
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase ${s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+                      }`}>{s.status === 'CRITICAL' ? 'Crítico' : 'Aviso'}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-400">{( (s.remaining/s.contracted) * 100 ).toFixed(1)}% Restante</span>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-xs text-slate-500 mb-2">Restante: <span className="font-bold text-slate-900">{s.remaining.toLocaleString()} L</span></p>
+                      <div className="w-32 h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className={`h-full ${s.status === 'CRITICAL' ? 'bg-rose-500' : 'bg-amber-500'}`} style={{ width: `${(s.remaining / s.contracted) * 100}%` }}></div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400">{((s.remaining / s.contracted) * 100).toFixed(1)}% Restante</span>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="p-12 text-center h-full flex flex-col items-center justify-center">
+                <ShieldCheck className="w-8 h-8 text-slate-200 mb-2" />
+                <p className="text-slate-400 text-xs font-semibold">Tudo sob controle.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -211,31 +225,36 @@ const Dashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {secretariats.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded flex items-center justify-center font-bold text-xs ${
-                        s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' :
+              {secretariats.length > 0 ? (
+                secretariats.map((s) => (
+                  <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded flex items-center justify-center font-bold text-xs ${s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' :
+                          s.status === 'WARNING' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
+                          }`}>{s.shortName}</div>
+                        <span className="font-semibold text-sm text-slate-800">{s.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-600 text-right">{s.contracted.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 text-right">{s.consumed.toLocaleString()}</td>
+                    <td className={`px-6 py-4 text-sm font-bold text-right ${s.status === 'CRITICAL' ? 'text-rose-600' :
+                      s.status === 'WARNING' ? 'text-amber-600' : 'text-slate-800'
+                      }`}>{s.remaining.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' :
                         s.status === 'WARNING' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
-                      }`}>{s.shortName}</div>
-                      <span className="font-semibold text-sm text-slate-800">{s.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 text-right">{s.contracted.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 text-right">{s.consumed.toLocaleString()}</td>
-                  <td className={`px-6 py-4 text-sm font-bold text-right ${
-                    s.status === 'CRITICAL' ? 'text-rose-600' : 
-                    s.status === 'WARNING' ? 'text-amber-600' : 'text-slate-800'
-                  }`}>{s.remaining.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-center">
-                    <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${
-                      s.status === 'CRITICAL' ? 'bg-rose-100 text-rose-600' :
-                      s.status === 'WARNING' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'
-                    }`}>{s.status === 'CRITICAL' ? 'Crítico' : s.status === 'WARNING' ? 'Aviso' : 'Saudável'}</span>
+                        }`}>{s.status === 'CRITICAL' ? 'Crítico' : s.status === 'WARNING' ? 'Aviso' : 'Saudável'}</span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                    Nenhuma secretaria cadastrada.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
