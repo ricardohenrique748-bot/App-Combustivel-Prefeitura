@@ -1,15 +1,15 @@
 
 import React, { useState, useMemo } from 'react';
-import { 
-  FileText, 
-  FileSpreadsheet, 
-  Settings, 
-  Search, 
-  Calendar, 
-  CarFront, 
-  Fuel, 
-  TrendingDown, 
-  TrendingUp, 
+import {
+  FileText,
+  FileSpreadsheet,
+  Settings,
+  Search,
+  Calendar,
+  CarFront,
+  Fuel,
+  TrendingDown,
+  TrendingUp,
   Minus,
   AlertTriangle,
   ChevronLeft,
@@ -19,18 +19,29 @@ import {
 import { useFleet } from '../FleetContext';
 
 const Reports: React.FC = () => {
-  const { transactions } = useFleet();
+  const { transactions, vehicles } = useFleet();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterFuel, setFilterFuel] = useState('ALL');
+  const [filterSecretariat, setFilterSecretariat] = useState('ALL');
+
+  const uniqueSecretariats = useMemo(() => {
+    const secs = new Set(vehicles.map(v => v.secretariat));
+    return Array.from(secs).filter(Boolean).sort();
+  }, [vehicles]);
 
   const filteredData = useMemo(() => {
     return transactions.filter(t => {
-      const matchesSearch = t.plate.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           t.driver.toLowerCase().includes(searchTerm.toLowerCase());
+      const vehicle = vehicles.find(v => v.plate === t.plate);
+      const vehicleSecretariat = vehicle?.secretariat || 'Desconhecida';
+
+      const matchesSearch = t.plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.driver.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesFuel = filterFuel === 'ALL' || t.fuelType === filterFuel;
-      return matchesSearch && matchesFuel;
+      const matchesSecretariat = filterSecretariat === 'ALL' || vehicleSecretariat === filterSecretariat;
+
+      return matchesSearch && matchesFuel && matchesSecretariat;
     });
-  }, [transactions, searchTerm, filterFuel]);
+  }, [transactions, vehicles, searchTerm, filterFuel, filterSecretariat]);
 
   const stats = useMemo(() => {
     const totalVolume = filteredData.reduce((acc, t) => acc + t.volume, 0);
@@ -52,13 +63,13 @@ const Reports: React.FC = () => {
       </div>
 
       <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div className="space-y-1.5">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Busca Rápida</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Placa ou motorista..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -67,8 +78,21 @@ const Reports: React.FC = () => {
             </div>
           </div>
           <div className="space-y-1.5">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Secretaria</label>
+            <select
+              value={filterSecretariat}
+              onChange={(e) => setFilterSecretariat(e.target.value)}
+              className="w-full px-4 py-2 text-sm border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none bg-white"
+            >
+              <option value="ALL">Todas as Secretarias</option>
+              {uniqueSecretariats.map(sec => (
+                <option key={sec} value={sec}>{sec}</option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1.5">
             <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Tipo de Combustível</label>
-            <select 
+            <select
               value={filterFuel}
               onChange={(e) => setFilterFuel(e.target.value)}
               className="w-full px-4 py-2 text-sm border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none bg-white"
@@ -78,8 +102,8 @@ const Reports: React.FC = () => {
               <option value="DIESEL S10">Diesel S10</option>
             </select>
           </div>
-          <button 
-            onClick={() => {setSearchTerm(''); setFilterFuel('ALL');}}
+          <button
+            onClick={() => { setSearchTerm(''); setFilterFuel('ALL'); setFilterSecretariat('ALL'); }}
             className="p-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 font-bold text-sm text-slate-600"
           >
             <RefreshCw className="w-4 h-4" /> Limpar Filtros
@@ -119,16 +143,15 @@ const Reports: React.FC = () => {
               {filteredData.map((t) => (
                 <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
                   <td className="px-6 py-4 text-xs font-medium text-slate-600">
-                    {t.date} <br/> <span className="text-[10px] opacity-60">{t.time}</span>
+                    {t.date} <br /> <span className="text-[10px] opacity-60">{t.time}</span>
                   </td>
                   <td className="px-6 py-4 text-sm font-black text-slate-800 font-mono">{t.plate}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{t.driver}</td>
                   <td className="px-6 py-4 text-sm font-medium text-slate-700">{t.volume.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm font-bold text-slate-700">R$ {t.value.toFixed(2)}</td>
-                  <td className={`px-6 py-4 text-sm font-black text-right ${
-                    t.efficiency && t.efficiency > 10 ? 'text-emerald-600' : 
-                    t.efficiency && t.efficiency < 8 ? 'text-rose-600' : 'text-slate-700'
-                  }`}>
+                  <td className={`px-6 py-4 text-sm font-black text-right ${t.efficiency && t.efficiency > 10 ? 'text-emerald-600' :
+                      t.efficiency && t.efficiency < 8 ? 'text-rose-600' : 'text-slate-700'
+                    }`}>
                     {t.efficiency?.toFixed(1) || '--'}
                   </td>
                 </tr>
