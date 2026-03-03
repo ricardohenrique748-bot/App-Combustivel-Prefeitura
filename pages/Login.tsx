@@ -40,32 +40,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
       </div>
 
-      <div className="w-full max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row items-center gap-16 z-10">
+      <div className="w-full px-6 py-12 flex justify-center items-center z-10">
 
-        {/* Left Side: Branding & Value Proposition */}
-        <div className="hidden lg:flex flex-col flex-1 text-white space-y-10">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-bold tracking-widest uppercase">
-              <Zap size={14} className="fill-current" />
-              Intelligence Driven Fleet
-            </div>
-
-            <h1 className="text-6xl font-black tracking-tight leading-[1.1]">
-              Smart <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-300">Tech</span>
-              <br />
-              <span className="text-4xl text-slate-400 font-bold tracking-normal italic">Government Edition</span>
-            </h1>
-
-            <p className="text-xl text-slate-400 leading-relaxed max-w-xl font-medium">
-              Transformando a gestão de frotas municipais através de dados em tempo real,
-              economia inteligente e transparência absoluta.
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side: Login Form Header & Card */}
+        {/* Login Form Header & Card */}
         <div className="w-full max-w-[480px]">
-          <div className="mb-10 text-center lg:text-left flex flex-col items-center lg:items-start lg:hidden">
+          <div className="mb-10 text-center flex flex-col items-center">
             <div className="mb-6 inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-600 text-white shadow-xl shadow-primary/30">
               <ShieldCheck size={28} />
             </div>
